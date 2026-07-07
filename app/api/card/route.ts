@@ -95,8 +95,8 @@ async function handle(req: NextRequest) {
     context,
     ``,
     kind === "question"
-      ? `While reading it, the reader typed this follow-up question. Answer it inside this context, in the same card format:`
-      : `Selected fragment to explain in this context:`,
+      ? `While reading it, the reader typed this follow-up question. Answer the question itself, directly — the context is an anchor, not a cage. Answer in the language the question is written in:`
+      : `Selected fragment to explain in this context (answer in the fragment's language):`,
     selection,
   ].join("\n");
 
