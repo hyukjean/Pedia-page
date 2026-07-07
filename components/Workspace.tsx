@@ -932,6 +932,7 @@ export default function Workspace({
                     }
                     expanded={id === activeId}
                     onFocus={() => focusNode(id)}
+                    onCollapse={() => setActiveId(ROOT_ID)}
                     onRetry={() => retryNode(id)}
                   />
                 ))}
@@ -1165,12 +1166,14 @@ function Card({
   parentLabel,
   expanded,
   onFocus,
+  onCollapse,
   onRetry,
 }: {
   node: Node;
   parentLabel: string | null;
   expanded: boolean;
   onFocus: () => void;
+  onCollapse: () => void;
   onRetry: () => void;
 }) {
   const indent = Math.min(Math.max(node.depth - 1, 0), 4) * 14;
@@ -1197,9 +1200,14 @@ function Card({
       {parentLabel && (
         <p className="mb-1 truncate text-[10px] text-sub opacity-80">↳ {parentLabel}</p>
       )}
-      <div className="mb-2 flex items-baseline justify-between gap-3">
+      <div className="mb-2 flex items-start justify-between gap-3">
         <span className="text-[14px] font-semibold leading-snug">{node.label}</span>
-        <span className="shrink-0 text-[10px] text-sub">d{node.depth}</span>
+        <button
+          onClick={onCollapse}
+          className="shrink-0 text-[15px] leading-none text-sub transition-opacity duration-150 hover:opacity-60"
+        >
+          ×
+        </button>
       </div>
       <CardBody node={node} onRetry={onRetry} />
     </div>
