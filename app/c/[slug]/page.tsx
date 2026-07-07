@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cardBySlug } from "@/lib/cache";
+import PublicCardDemo from "@/components/PublicCardDemo";
 
 // Cached cards double as SEO surface: every explored concept becomes a
 // public, statically-rendered page that funnels back into the runtime.
@@ -55,13 +56,15 @@ export default async function CardPage({ params }: Params) {
         pedia<span className="text-accent">.</span>page
       </a>
       <h1 className="text-[21px] font-semibold leading-snug">{card.query_text}</h1>
-      <article className="mt-6">
+      <article id="public-card" className="mt-6 cursor-text">
         {paragraphs.map((p, i) => (
           <p key={i} className="mb-4 text-[16px] leading-[1.75]">
             {p}
           </p>
         ))}
       </article>
+      {/* the shared page teaches the gesture — drag drops you into the runtime */}
+      <PublicCardDemo question={card.query_text} />
       {chips.length > 0 && (
         <div className="mt-6 flex flex-wrap gap-2">
           {chips.map((c) => (

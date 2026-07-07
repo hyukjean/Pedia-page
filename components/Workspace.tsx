@@ -65,7 +65,13 @@ function draw4(): string[] {
 
 const ROOT_ID = "root";
 
-export default function Workspace({ initialQuestion }: { initialQuestion: string | null }) {
+export default function Workspace({
+  initialQuestion,
+  initialSelection = null,
+}: {
+  initialQuestion: string | null;
+  initialSelection?: string | null;
+}) {
   const [phase, setPhase] = useState<"landing" | "session">("landing");
   const [input, setInput] = useState("");
   const [question, setQuestion] = useState("");
@@ -535,6 +541,19 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [phase]);
+
+  // A drag carried over from a public card page (/?q=…&sel=…): the moment
+  // the root answer settles, that selection becomes the first card — the
+  // visitor's gesture on the shared page completes inside the runtime.
+  const selConsumed = useRef(false);
+  useEffect(() => {
+    if (!initialSelection || selConsumed.current) return;
+    const root = nodes[ROOT_ID];
+    if (phase !== "session" || !root?.content || root.streaming) return;
+    selConsumed.current = true;
+    const para = root.content.split(/\n\n+/).find((p) => p.includes(initialSelection)) ?? root.content.slice(0, 1200);
+    derive(ROOT_ID, initialSelection, para);
+  }, [initialSelection, phase, nodes, derive]);
 
   // ── Drag demo ──────────────────────────────────────────────
   // Once, ~2.8s after the first answer settles and only while nothing has
