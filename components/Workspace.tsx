@@ -304,11 +304,13 @@ export default function Workspace({
     [nodes, question, ask, patchNode, cardStreamCallbacks],
   );
 
-  // Focus a node: expand its card and bring it into view.
+  // Focus a node: expand its card and bring it into view — in the desktop
+  // rail and in the mobile dock strip alike.
   const focusNode = useCallback((id: string) => {
     setActiveId(id);
     requestAnimationFrame(() => {
       document.getElementById(`card-${id}`)?.scrollIntoView({ block: "nearest" });
+      document.getElementById(`dock-${id}`)?.scrollIntoView({ inline: "nearest", block: "nearest" });
     });
   }, []);
 
@@ -701,7 +703,11 @@ export default function Workspace({
     <div className="min-h-screen" onMouseUp={handleMouseUp}>
       <div
         className={`mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 ${
-          activeId !== ROOT_ID ? "max-md:pb-[calc(45vh+24px)]" : "max-md:pb-24"
+          activeId !== ROOT_ID
+            ? "max-md:pb-[calc(38vh+150px)]"
+            : cardIds.length > 0
+              ? "max-md:pb-40"
+              : "max-md:pb-24"
         }`}
       >
         {/* ── Root column ─────────────────────────────────── */}
@@ -924,16 +930,47 @@ export default function Workspace({
         </aside>
       </div>
 
-      {/* ── Mobile bottom sheet ─────────────────────────────── */}
-      {activeId !== ROOT_ID && activeNode && (
-        <div className="pedia-in fixed inset-x-0 bottom-0 z-20 max-h-[45vh] overflow-y-auto bg-surface px-5 pb-20 pt-4 md:hidden">
-          <div className="mb-2 flex items-start justify-between gap-4">
-            <span className="text-[14px] font-semibold leading-snug">{activeNode.label}</span>
-            <button onClick={() => setActiveId(ROOT_ID)} className="text-[16px] leading-none text-sub">
-              ×
-            </button>
+      {/* ── Mobile card dock ────────────────────────────────
+          A labeled, horizontally scrollable strip of every card — the
+          phone's version of the desktop rail. Tap a chip to open it
+          above the strip; tap it again (or ×) to fold it away. Cards
+          stay findable the whole session. */}
+      {cardIds.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-20 md:hidden">
+          {activeId !== ROOT_ID && activeNode && (
+            <div className="pedia-in max-h-[38vh] overflow-y-auto bg-surface px-5 pb-3 pt-4">
+              <div className="mb-2 flex items-start justify-between gap-4">
+                <span className="text-[14px] font-semibold leading-snug">{activeNode.label}</span>
+                <button onClick={() => setActiveId(ROOT_ID)} className="text-[16px] leading-none text-sub">
+                  ×
+                </button>
+              </div>
+              <CardBody node={activeNode} onRetry={() => retryNode(activeNode.id)} />
+            </div>
+          )}
+          <div
+            className="flex gap-2 overflow-x-auto bg-page px-4 pt-2"
+            style={{ paddingBottom: "calc(max(0.8rem, env(safe-area-inset-bottom)) + 56px)" }}
+          >
+            {cardIds.map((id) => {
+              const n = nodes[id];
+              if (!n) return null;
+              const act = id === activeId;
+              return (
+                <button
+                  key={id}
+                  id={`dock-${id}`}
+                  onClick={() => (act ? setActiveId(ROOT_ID) : focusNode(id))}
+                  className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] ${
+                    act ? "pedia-chip font-semibold" : "bg-surface text-ink opacity-75"
+                  }`}
+                >
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${n.bedrock ? "bg-accent" : "bg-sub"}`} />
+                  <span className="max-w-[38vw] truncate">{n.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <CardBody node={activeNode} onRetry={() => retryNode(activeNode.id)} />
         </div>
       )}
 
