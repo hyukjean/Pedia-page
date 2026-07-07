@@ -100,6 +100,14 @@ export default function PublicCardDemo({ question }: { question: string }) {
     window.location.href = `/?q=${encodeURIComponent(question)}&sel=${encodeURIComponent(pending.text)}`;
   }, [pending, question]);
 
+  const quote = useCallback(() => {
+    if (!pending) return;
+    window.getSelection()?.removeAllRanges();
+    setAsk((prev) => `${prev ? prev.trimEnd() + " " : ""}“${pending.text}” `);
+    setPending(null);
+    requestAnimationFrame(() => document.getElementById("public-ask")?.focus());
+  }, [pending]);
+
   return (
     <>
       {/* The same glass bar as the live app: a typed question drops the
@@ -116,6 +124,7 @@ export default function PublicCardDemo({ question }: { question: string }) {
       >
         <div className="pedia-input pedia-glass relative rounded-full">
           <input
+            id="public-ask"
             value={ask}
             onChange={(e) => setAsk(e.target.value)}
             placeholder="ask a follow-up — it opens the live thread"
@@ -157,25 +166,79 @@ export default function PublicCardDemo({ question }: { question: string }) {
         </div>
       )}
 
-      {pending && (
-        <div
-          className={`pedia-in fixed z-30 flex ${coarse ? "" : "-translate-y-full"} ${
-            pending.align === "right" ? "-translate-x-full" : ""
-          }`}
-          style={{ left: pending.x, top: coarse ? pending.bottom + 28 : pending.top - 8 }}
-        >
-          <button
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              explore();
-            }}
-            className="rounded bg-accent px-4 py-2.5 text-[16px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+      {pending &&
+        (coarse ? (
+          <div
+            className="pedia-in fixed inset-x-3 z-40 flex justify-center"
+            style={{ bottom: "calc(max(0.8rem, env(safe-area-inset-bottom)) + 58px)" }}
           >
-            ?
-          </button>
-        </div>
-      )}
+            <div className="flex max-w-full items-stretch overflow-hidden rounded-full bg-accent text-white">
+              <span className="max-w-[44vw] self-center truncate py-2.5 pl-4 pr-2 text-[12px] opacity-85">
+                “{pending.text}”
+              </span>
+              <button
+                title="quote this into a question"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  quote();
+                }}
+                className="px-4 py-2.5 text-[16px] font-semibold leading-none transition-opacity duration-150 active:opacity-70"
+              >
+                +
+              </button>
+              <span className="my-2 w-px bg-white opacity-30" />
+              <button
+                title="open this as a card"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  explore();
+                }}
+                className="py-2.5 pl-4 pr-5 text-[16px] font-semibold leading-none transition-opacity duration-150 active:opacity-70"
+              >
+                ?
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`pedia-in fixed z-30 flex -translate-y-full items-stretch overflow-hidden rounded bg-accent ${
+              pending.align === "right" ? "-translate-x-full" : ""
+            }`}
+            style={{
+              left:
+                pending.align === "right"
+                  ? Math.max(pending.x, 88)
+                  : Math.min(pending.x, (typeof window !== "undefined" ? window.innerWidth : 1200) - 88),
+              top: pending.top - 8,
+            }}
+          >
+            <button
+              title="quote this into a question"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                quote();
+              }}
+              className="px-2.5 py-1.5 text-[13px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+            >
+              +
+            </button>
+            <span className="my-1.5 w-px bg-white opacity-30" />
+            <button
+              title="open this as a card"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                explore();
+              }}
+              className="px-2.5 py-1.5 text-[13px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+            >
+              ?
+            </button>
+          </div>
+        ))}
     </>
   );
 }

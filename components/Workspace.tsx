@@ -1026,48 +1026,82 @@ export default function Workspace({
       )}
 
       {/* ── Selection popover: + quotes, ? derives ───────────
-          One accent pill — unmistakably a control, not more text.
-          Touch: dropped well below the selection (clear of the iOS
-          callout), with word labels. Mouse: at the drag's end corner. */}
-      {pendingSel && (
-        <div
-          className={`pedia-in fixed z-30 flex items-stretch overflow-hidden rounded bg-accent ${
-            coarse ? "" : "-translate-y-full"
-          } ${pendingSel.align === "right" ? "-translate-x-full" : ""}`}
-          style={{
-            left: pendingSel.x,
-            top: coarse ? pendingSel.bottom + 28 : pendingSel.top - 8,
-          }}
-        >
-          <button
-            title="quote this into a question"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              popoverQuote();
-            }}
-            className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
-              coarse ? "px-4 py-2.5 text-[16px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
-            }`}
+          Mouse: an accent pill at the drag's end corner, clamped inside
+          the viewport. Touch: a fixed action pill above the input bar —
+          the only spot the iOS selection callout can never cover. */}
+      {pendingSel &&
+        (coarse ? (
+          <div
+            className="pedia-in fixed inset-x-3 z-40 flex justify-center"
+            style={{ bottom: "calc(max(0.8rem, env(safe-area-inset-bottom)) + 58px)" }}
           >
-            +
-          </button>
-          <span className="my-1.5 w-px bg-white opacity-30" />
-          <button
-            title="open this as a card"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              popoverCard();
-            }}
-            className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
-              coarse ? "px-4 py-2.5 text-[16px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
+            <div className="flex max-w-full items-stretch overflow-hidden rounded-full bg-accent text-white">
+              <span className="max-w-[44vw] self-center truncate py-2.5 pl-4 pr-2 text-[12px] opacity-85">
+                “{pendingSel.text}”
+              </span>
+              <button
+                title="quote this into a question"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  popoverQuote();
+                }}
+                className="px-4 py-2.5 text-[16px] font-semibold leading-none transition-opacity duration-150 active:opacity-70"
+              >
+                +
+              </button>
+              <span className="my-2 w-px bg-white opacity-30" />
+              <button
+                title="open this as a card"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  popoverCard();
+                }}
+                className="py-2.5 pl-4 pr-5 text-[16px] font-semibold leading-none transition-opacity duration-150 active:opacity-70"
+              >
+                ?
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`pedia-in fixed z-30 flex -translate-y-full items-stretch overflow-hidden rounded bg-accent ${
+              pendingSel.align === "right" ? "-translate-x-full" : ""
             }`}
+            style={{
+              left:
+                pendingSel.align === "right"
+                  ? Math.max(pendingSel.x, 88)
+                  : Math.min(pendingSel.x, (typeof window !== "undefined" ? window.innerWidth : 1200) - 88),
+              top: pendingSel.top - 8,
+            }}
           >
-            ?
-          </button>
-        </div>
-      )}
+            <button
+              title="quote this into a question"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                popoverQuote();
+              }}
+              className="px-2.5 py-1.5 text-[13px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+            >
+              +
+            </button>
+            <span className="my-1.5 w-px bg-white opacity-30" />
+            <button
+              title="open this as a card"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                popoverCard();
+              }}
+              className="px-2.5 py-1.5 text-[13px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+            >
+              ?
+            </button>
+          </div>
+        ))}
 
       {notice && (
         <div className="pedia-in fixed bottom-6 left-1/2 z-30 -translate-x-1/2 rounded bg-surface px-4 py-2 text-[13px] text-sub">
