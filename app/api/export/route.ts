@@ -23,6 +23,15 @@ interface ExportNode {
 }
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    console.error("[pedia] /api/export failed:", e);
+    return Response.json({ error: e instanceof Error ? e.message : "internal error" }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const question = typeof body.question === "string" ? body.question.trim().slice(0, 500) : "";
   const level = body.level === "easy" ? "easy" : "standard";

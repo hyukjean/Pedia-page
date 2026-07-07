@@ -19,6 +19,17 @@ const textHeaders = (extra: Record<string, string>) => ({
 });
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    // Fail loud, not blank: an escaped exception otherwise becomes an
+    // opaque platform 500 with an empty body.
+    console.error("[pedia] /api/answer failed:", e);
+    return Response.json({ error: e instanceof Error ? e.message : "internal error" }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const { question, sessionId } = await req.json().catch(() => ({}));
   if (typeof question !== "string" || !question.trim() || question.length > 500) {
     return Response.json({ error: "question required (≤500 chars)" }, { status: 400 });

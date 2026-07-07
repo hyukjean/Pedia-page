@@ -8,6 +8,15 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    console.error("[pedia] /api/synthesis failed:", e);
+    return Response.json({ error: e instanceof Error ? e.message : "internal error" }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const question = typeof body.question === "string" ? body.question.slice(0, 500) : "";
   const answer = typeof body.answer === "string" ? body.answer.slice(0, 6000) : "";

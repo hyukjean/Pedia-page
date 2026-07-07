@@ -21,6 +21,15 @@ const textHeaders = (extra: Record<string, string>) => ({
 });
 
 export async function POST(req: NextRequest) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    console.error("[pedia] /api/card failed:", e);
+    return Response.json({ error: e instanceof Error ? e.message : "internal error" }, { status: 500 });
+  }
+}
+
+async function handle(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const selection = typeof body.selection === "string" ? body.selection.trim().slice(0, 300) : "";
   const context = typeof body.context === "string" ? body.context.trim().slice(0, 2000) : "";
