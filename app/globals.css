@@ -1,19 +1,37 @@
 @import "tailwindcss";
 
 /* ── Design tokens — the only colors that exist ─────────────
-   bg #FFFFFF · ink #1A1A1A · sub #8A8A8A · accent #2B5CE6
-   surface #FAFAFA (separation by background, not borders)   */
+   page · ink · sub · accent · surface. Dark mode is the same
+   five tokens inverted; no component knows which mode it's in. */
 @theme {
   --color-ink: #1a1a1a;
   --color-sub: #8a8a8a;
   --color-accent: #2b5ce6;
   --color-surface: #fafafa;
+  --color-page: #ffffff;
   --font-sans: "Inter", "Pretendard Variable", Pretendard, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+:root {
+  --pedia-sheen: rgba(255, 255, 255, 0.9);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-page: #101012;
+    --color-ink: #e9e9e7;
+    --color-sub: #90909a;
+    --color-accent: #6f8ff2;
+    --color-surface: #1a1a1f;
+    --pedia-sheen: rgba(255, 255, 255, 0.09);
+    color-scheme: dark;
+  }
 }
 
 html,
 body {
-  background: #ffffff;
+  background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-weight: 400;

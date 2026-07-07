@@ -3,7 +3,7 @@
 - Payments / subscriptions (BYOK `users.encrypted_api_key` column reserved in schema only; **login itself is built** — email magic link via Supabase Auth, optional)
 - **Personalized knowledge engine — phase 1 built, rest here.** Built (2026-07): `sessions` + `events` tables, trajectory logging (ask / derive with depth and bedrock / synthesis), and `/api/recommend` — quiet landing suggestions one step beyond where the user's curiosity stopped, cached per-user, regenerated only after new activity. Still later: (1) per-user curiosity *graph* (concepts explored vs. skipped, habitual depth, bedrock domains they gravitate toward — the events table already holds the data; this is a query + a view, then a model input); (2) `revisit` / `abandon` event types for finer trajectory signal; (3) reels as actual *video* (TTS narration + generated visuals) — the subtitle-reel player and the per-thread script generation are built (2026-07, Thread Export: essay .md + 60-second caption reel); what remains is rendering that script into a shareable mp4; (4) a "your threads" quiet history surface — deliberately withheld until it can be spatial, not a chat-history list.
 - Separate keyword-card mode (folded into concept chips per spec)
-- Dark mode
+- ~~Dark mode~~ (built 2026-07: five tokens inverted via prefers-color-scheme; no component knows which mode it's in)
 - Multilingual UI chrome (answers already follow the question's language)
 - Admin page / analytics dashboard (SQL queries in COST.md cover the pitch data)
 - Chat history

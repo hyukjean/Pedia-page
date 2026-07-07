@@ -153,7 +153,7 @@ export default function AccountPanel({ onClose }: { onClose: () => void }) {
                     value={keyInput}
                     onChange={(e) => setKeyInput(e.target.value)}
                     placeholder={`${provider} API key`}
-                    className="w-full rounded bg-white px-2.5 py-1.5 text-[16px] outline-none placeholder:text-sub md:text-[12px]"
+                    className="w-full rounded bg-page px-2.5 py-1.5 text-[16px] outline-none placeholder:text-sub md:text-[12px]"
                   />
                   <button type="submit" disabled={busy || keyInput.trim().length < 8} className="text-accent transition-opacity duration-150 hover:opacity-70 disabled:opacity-30">
                     save

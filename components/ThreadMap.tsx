@@ -83,7 +83,7 @@ export default function ThreadMap({
               key={`e-${n.id}`}
               d={`M ${p.x + 3} ${p.y} C ${p.x + DX / 2} ${p.y}, ${p.x + DX / 2} ${c.y}, ${c.x - 3} ${c.y}`}
               fill="none"
-              stroke="#8a8a8a"
+              stroke="var(--color-sub)"
               strokeOpacity={0.35}
               strokeWidth={1}
             />
@@ -99,8 +99,8 @@ export default function ThreadMap({
               cx={c.x}
               cy={c.y}
               r={active ? 4 : 3}
-              fill={active ? "#2b5ce6" : n.bedrock ? "#ffffff" : "#8a8a8a"}
-              stroke={n.bedrock ? "#2b5ce6" : "none"}
+              fill={active ? "var(--color-accent)" : n.bedrock ? "var(--color-page)" : "var(--color-sub)"}
+              stroke={n.bedrock ? "var(--color-accent)" : "none"}
               strokeWidth={n.bedrock ? 1.5 : 0}
               className="cursor-pointer"
               onClick={() => onSelect(n.id)}

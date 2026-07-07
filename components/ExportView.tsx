@@ -237,7 +237,7 @@ export default function ExportView({
   }, [md, question]);
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-white">
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-page">
       <div className={`mx-auto max-w-[640px] px-6 py-14 ${showReel ? "pb-[42vh]" : ""}`}>
         <div className="mb-8 flex flex-wrap items-center justify-between gap-x-5 gap-y-2 text-[13px]">
           <button onClick={onClose} className="text-sub transition-opacity duration-150 hover:opacity-60">

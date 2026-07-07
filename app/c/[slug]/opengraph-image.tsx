@@ -19,7 +19,8 @@ async function loadFont(family: string, text: string): Promise<ArrayBuffer | nul
         headers: { "User-Agent": "Mozilla/5.0 (Windows NT 6.1; rv:20.0) Gecko/20100101 Firefox/20.0" },
       })
     ).text();
-    const url = css.match(/src: url\((.+?)\) format\('(?:truetype|opentype)'\)/)?.[1];
+    // The old UA gets woff/ttf (never woff2, which satori can't parse).
+    const url = css.match(/src: url\((.+?)\) format\('(?:truetype|opentype|woff)'\)/)?.[1];
     if (!url) return null;
     const res = await fetch(url);
     return res.ok ? await res.arrayBuffer() : null;
@@ -59,14 +60,16 @@ export default async function OGImage({ params }: { params: Promise<{ slug: stri
   } catch {}
 
   const allText = `${question}${hook}${chips.join("")}pedia.page …·`;
+  // Noto Sans KR 800 for the hook (unambiguously bold, renders everywhere),
+  // 500 for the supporting text — a notch above regular for aesthetics.
   const [hookFont, bodyFont] = await Promise.all([
-    loadFont("Black+Han+Sans", allText),
-    loadFont("Noto+Sans+KR:wght@400", allText),
+    loadFont("Noto+Sans+KR:wght@800", allText),
+    loadFont("Noto+Sans+KR:wght@500", allText),
   ]);
 
   const fonts = [
-    ...(hookFont ? [{ name: "hook", data: hookFont }] : []),
-    ...(bodyFont ? [{ name: "body", data: bodyFont }] : []),
+    ...(hookFont ? [{ name: "hook", data: hookFont, weight: 800 as const }] : []),
+    ...(bodyFont ? [{ name: "body", data: bodyFont, weight: 500 as const }] : []),
   ];
   const hookSize = hook.length < 42 ? 68 : hook.length < 72 ? 58 : 48;
 
@@ -94,6 +97,7 @@ export default async function OGImage({ params }: { params: Promise<{ slug: stri
           style={{
             display: "flex",
             fontFamily: "hook, body, sans-serif",
+            fontWeight: 800,
             fontSize: hookSize,
             color: "#1A1A1A",
             lineHeight: 1.32,

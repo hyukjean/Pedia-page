@@ -923,28 +923,30 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
             }}
           />
           <div
-            className={`absolute right-0 flex items-center gap-0.5 rounded bg-surface px-1 py-0.5 text-[14px] font-semibold leading-none text-accent ${
-              coarse ? "-bottom-2.5 translate-y-full" : "-top-1.5 -translate-y-full"
+            className={`absolute right-0 flex items-stretch overflow-hidden rounded bg-accent text-[13px] font-semibold leading-none text-white ${
+              coarse ? "-bottom-2.5 translate-y-full" : "-top-2 -translate-y-full"
             }`}
             style={{ opacity: 0, animation: "pedia-demo-popover 2600ms ease-in-out forwards" }}
           >
-            <span className="px-1.5 py-0.5">+</span>
-            <span className="px-1.5 py-0.5">?</span>
+            <span className="px-2.5 py-1.5">+</span>
+            <span className="my-1.5 w-px bg-white opacity-30" />
+            <span className="px-2.5 py-1.5">?</span>
           </div>
         </div>
       )}
 
       {/* ── Selection popover: + quotes, ? derives ───────────
-          Touch: below the selection (clear of the native copy menu),
-          bigger targets. Mouse: above, at the drag's end corner. */}
+          One accent pill — unmistakably a control, not more text.
+          Touch: dropped well below the selection (clear of the iOS
+          callout), with word labels. Mouse: at the drag's end corner. */}
       {pendingSel && (
         <div
-          className={`pedia-in fixed z-30 flex items-center gap-0.5 rounded bg-surface px-1 py-0.5 ${
+          className={`pedia-in fixed z-30 flex items-stretch overflow-hidden rounded bg-accent ${
             coarse ? "" : "-translate-y-full"
           } ${pendingSel.align === "right" ? "-translate-x-full" : ""}`}
           style={{
             left: pendingSel.x,
-            top: coarse ? pendingSel.bottom + 10 : pendingSel.top - 6,
+            top: coarse ? pendingSel.bottom + 28 : pendingSel.top - 8,
           }}
         >
           <button
@@ -954,12 +956,13 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               e.stopPropagation();
               popoverQuote();
             }}
-            className={`pedia-pop font-semibold leading-none text-accent ${
-              coarse ? "px-3 py-2 text-[17px]" : "px-1.5 py-0.5 text-[14px]"
+            className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
+              coarse ? "px-3.5 py-2.5 text-[13px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
             }`}
           >
-            +
+            {coarse ? "+ quote" : "+"}
           </button>
+          <span className="my-1.5 w-px bg-white opacity-30" />
           <button
             title="open this as a card"
             onMouseDown={(e) => {
@@ -967,11 +970,11 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               e.stopPropagation();
               popoverCard();
             }}
-            className={`pedia-pop font-semibold leading-none text-accent ${
-              coarse ? "px-3 py-2 text-[17px]" : "px-1.5 py-0.5 text-[14px]"
+            className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
+              coarse ? "px-3.5 py-2.5 text-[13px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
             }`}
           >
-            ?
+            {coarse ? "? card" : "?"}
           </button>
         </div>
       )}
@@ -1000,20 +1003,27 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
 
 // ── Thinking skeleton ────────────────────────────────────────
 // Text-shaped bars with a sweeping sheen fill the silence between the
-// question and the first token. Widths mimic paragraph rhythm.
-function Skeleton({ lines, height = 15 }: { lines: number[]; height?: number }) {
+// question and the first token. Bar height = the font size it stands in
+// for, gaps = its line rhythm — it should read as blurred text, not as
+// a different widget.
+function Skeleton({ lines, height = 17 }: { lines: number[]; height?: number }) {
   return (
-    <div className="pedia-in flex flex-col" style={{ gap: Math.round(height * 0.8) }}>
+    <div className="pedia-in flex flex-col" style={{ gap: Math.round(height * 0.65) }}>
       {lines.map((w, i) => (
         <div
           key={i}
-          className="relative overflow-hidden rounded bg-surface"
-          style={{ height, width: `${w}%`, marginBottom: w < 70 && i < lines.length - 1 ? height : 0 }}
+          className="relative overflow-hidden rounded"
+          style={{
+            height,
+            width: `${w}%`,
+            background: "color-mix(in srgb, var(--color-sub) 28%, transparent)",
+            marginBottom: w < 70 && i < lines.length - 1 ? height : 0,
+          }}
         >
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
+              background: "linear-gradient(90deg, transparent, var(--pedia-sheen), transparent)",
               animation: "pedia-shimmer 1.5s ease-in-out infinite",
             }}
           />
@@ -1076,7 +1086,7 @@ function CardBody({ node, onRetry }: { node: Node; onRetry?: () => void }) {
   const paragraphs = node.content.split(/\n\n+/).filter(Boolean);
   return (
     <div data-node-id={node.id} className="cursor-text">
-      {node.streaming && !node.content && <Skeleton lines={[100, 94, 76, 100, 42]} height={12} />}
+      {node.streaming && !node.content && <Skeleton lines={[100, 94, 76, 100, 42]} height={15} />}
       {paragraphs.map((p, i) => (
         <p
           key={i}
@@ -1098,7 +1108,7 @@ function CardBody({ node, onRetry }: { node: Node; onRetry?: () => void }) {
         </p>
       )}
       {node.bedrock && (
-        <div className="pedia-in mt-3 rounded bg-white p-3">
+        <div className="pedia-in mt-3 rounded bg-page p-3">
           <p className="text-[12px] font-semibold text-accent">This is bedrock — the floor of this thread.</p>
           {node.bedrockTrace && <p className="mt-2 text-[13px] leading-[1.65] text-ink">{node.bedrockTrace}</p>}
         </div>
