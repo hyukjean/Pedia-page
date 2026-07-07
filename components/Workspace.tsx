@@ -644,14 +644,22 @@ export default function Workspace({
               e.preventDefault();
               ask(input);
             }}
+            className="relative"
           >
             <input
               autoFocus
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything"
-              className="w-full rounded bg-surface px-4 py-3 text-[16px] outline-none placeholder:text-sub"
+              className="pedia-input w-full rounded px-4 py-3 pr-11 text-[16px] outline-none placeholder:text-sub"
             />
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[17px] font-semibold text-accent transition-opacity duration-150 disabled:opacity-25"
+            >
+              →
+            </button>
           </form>
           <div className="mt-8 flex flex-col gap-2.5">
             {personalized && (
@@ -691,7 +699,7 @@ export default function Workspace({
 
   return (
     <div className="min-h-screen" onMouseUp={handleMouseUp}>
-      <div className="mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 max-md:pb-[45vh]">
+      <div className="mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 max-md:pb-[calc(40vh+92px)]">
         {/* ── Root column ─────────────────────────────────── */}
         <main className="min-w-0 max-w-[640px] flex-1">
           <div className="mb-8 flex items-center justify-between">
@@ -789,7 +797,7 @@ export default function Workspace({
                       "";
                     derive(ROOT_ID, c, para);
                   }}
-                  className="pedia-lift rounded bg-surface px-2.5 py-1 text-[13px] text-ink opacity-60 hover:opacity-100"
+                  className="pedia-chip rounded px-2.5 py-1 text-[13px] font-semibold"
                 >
                   {c}
                 </button>
@@ -798,26 +806,37 @@ export default function Workspace({
           )}
 
           {/* Follow-up input: a typed question joins the tree as a card
-              derived from whatever is currently active — never a chat. */}
+              derived from whatever is currently active — never a chat.
+              Mobile: a persistent bottom bar; desktop: inline under the
+              answer. */}
           {!root?.streaming && (
             <form
-              className="mt-10"
+              className="mt-10 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:mt-0 max-md:bg-page max-md:px-4 max-md:pt-2 max-md:pb-[max(0.6rem,env(safe-area-inset-bottom))]"
               onSubmit={(e) => {
                 e.preventDefault();
                 askFollowUp();
               }}
             >
-              <input
-                id="follow-input"
-                value={followInput}
-                onChange={(e) => setFollowInput(e.target.value)}
-                placeholder={
-                  activeId !== ROOT_ID && activeNode
-                    ? `ask about “${activeNode.label.slice(0, 40)}” — it joins the thread`
-                    : "ask a follow-up — it joins this thread as a card"
-                }
-                className="w-full rounded bg-surface px-3.5 py-2.5 text-[16px] outline-none placeholder:text-sub md:text-[14px]"
-              />
+              <div className="relative">
+                <input
+                  id="follow-input"
+                  value={followInput}
+                  onChange={(e) => setFollowInput(e.target.value)}
+                  placeholder={
+                    activeId !== ROOT_ID && activeNode
+                      ? `ask about “${activeNode.label.slice(0, 32)}”`
+                      : "ask a follow-up — it joins this thread"
+                  }
+                  className="pedia-input w-full rounded px-3.5 py-2.5 pr-10 text-[16px] outline-none placeholder:text-sub md:text-[14px]"
+                />
+                <button
+                  type="submit"
+                  disabled={!followInput.trim()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[16px] font-semibold text-accent transition-opacity duration-150 disabled:opacity-25"
+                >
+                  →
+                </button>
+              </div>
             </form>
           )}
 
@@ -903,7 +922,7 @@ export default function Workspace({
 
       {/* ── Mobile bottom sheet ─────────────────────────────── */}
       {activeId !== ROOT_ID && activeNode && (
-        <div className="pedia-in fixed inset-x-0 bottom-0 z-20 max-h-[45vh] overflow-y-auto bg-surface px-5 pb-6 pt-4 md:hidden">
+        <div className="pedia-in fixed inset-x-0 bottom-[62px] z-20 max-h-[40vh] overflow-y-auto bg-surface px-5 pb-6 pt-4 md:hidden">
           <div className="mb-2 flex items-start justify-between gap-4">
             <span className="text-[14px] font-semibold leading-snug">{activeNode.label}</span>
             <button onClick={() => setActiveId(ROOT_ID)} className="text-[16px] leading-none text-sub">

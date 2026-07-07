@@ -68,7 +68,7 @@ export default function ThreadMap({
     <nav
       className={
         variant === "corner"
-          ? `fixed left-5 z-10 select-none ${lift ? "bottom-[47vh]" : "bottom-5"}`
+          ? `fixed left-5 z-10 select-none ${lift ? "bottom-[calc(40vh+78px)]" : "bottom-[78px]"}`
           : "select-none"
       }
     >

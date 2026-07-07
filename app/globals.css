@@ -72,6 +72,28 @@ body {
   transform: scale(1.2);
 }
 
+/* Inputs read as inputs: page background + a hairline, accent on focus.
+   (The one sanctioned use of a 1px line — affordance is impossible
+   without it.) */
+.pedia-input {
+  background: var(--color-page);
+  border: 1px solid color-mix(in srgb, var(--color-sub) 35%, transparent);
+}
+.pedia-input:focus {
+  border-color: var(--color-accent);
+}
+
+/* Concept chips read as links: accent-tinted pills, deepen on hover —
+   color does the inviting, nothing moves. */
+.pedia-chip {
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+  color: var(--color-accent);
+  transition: background 150ms ease;
+}
+.pedia-chip:hover {
+  background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
 /* Thread-map dots grow toward the cursor. */
 .pedia-map circle {
   transform-box: fill-box;
