@@ -75,6 +75,17 @@ body {
   }
 }
 
+/* Loading shimmer: a white sheen sweeps across text-shaped surface bars
+   (transform only) while the model thinks — the page never sits dead. */
+@keyframes pedia-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 /* Static streaming caret (no blink — animation budget is 150ms). */
 .pedia-caret::after {
   content: "";

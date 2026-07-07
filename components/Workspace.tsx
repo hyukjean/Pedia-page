@@ -736,6 +736,13 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
                 {p}
               </p>
             ))}
+            {/* the silence before the first token — OpenAI-style shimmer */}
+            {!showSynthesis && root?.streaming && !root.content && (
+              <Skeleton lines={[100, 97, 91, 54, 100, 95, 88, 38]} />
+            )}
+            {showSynthesis && synthesis.status === "streaming" && !synthesis.text && (
+              <Skeleton lines={[100, 97, 91, 54, 100, 95, 88, 38]} />
+            )}
             {root?.error && (
               <p className="text-[14px] text-sub">
                 {root.error}
@@ -990,6 +997,31 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
   );
 }
 
+// ── Thinking skeleton ────────────────────────────────────────
+// Text-shaped bars with a sweeping sheen fill the silence between the
+// question and the first token. Widths mimic paragraph rhythm.
+function Skeleton({ lines, height = 15 }: { lines: number[]; height?: number }) {
+  return (
+    <div className="pedia-in flex flex-col" style={{ gap: Math.round(height * 0.8) }}>
+      {lines.map((w, i) => (
+        <div
+          key={i}
+          className="relative overflow-hidden rounded bg-surface"
+          style={{ height, width: `${w}%`, marginBottom: w < 70 && i < lines.length - 1 ? height : 0 }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
+              animation: "pedia-shimmer 1.5s ease-in-out infinite",
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Knowledge card ───────────────────────────────────────────
 // Depth renders as indentation: the rail *is* the tree, matching the
 // map above it, so derivation reads as branching — not a flat index.
@@ -1043,6 +1075,7 @@ function CardBody({ node, onRetry }: { node: Node; onRetry?: () => void }) {
   const paragraphs = node.content.split(/\n\n+/).filter(Boolean);
   return (
     <div data-node-id={node.id} className="cursor-text">
+      {node.streaming && !node.content && <Skeleton lines={[100, 94, 76, 100, 42]} height={12} />}
       {paragraphs.map((p, i) => (
         <p
           key={i}
