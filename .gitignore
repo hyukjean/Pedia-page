@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+.env
+.env.local
+*.log
+.DS_Store
+.vercel/
+# machine-specific dev launcher (absolute paths)
+.claude/
+next-env.d.ts

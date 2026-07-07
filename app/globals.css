@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* ── Design tokens — the only colors that exist ─────────────
+   bg #FFFFFF · ink #1A1A1A · sub #8A8A8A · accent #2B5CE6
+   surface #FAFAFA (separation by background, not borders)   */
+@theme {
+  --color-ink: #1a1a1a;
+  --color-sub: #8a8a8a;
+  --color-accent: #2b5ce6;
+  --color-surface: #fafafa;
+  --font-sans: "Inter", "Pretendard Variable", Pretendard, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Selection is the primary gesture — make it quietly visible. */
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+
+/* The only animation in the product: opacity/transform, 150ms. */
+@keyframes pedia-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pedia-in {
+  animation: pedia-in 150ms ease-out;
+}
+
+/* One-time drag demonstration: a phantom selection sweeps across a real
+   phrase, the +? popover ghosts in at its end, everything fades. Shows
+   the gesture instead of describing it — transform/opacity only. */
+@keyframes pedia-drag-demo {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  35% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  82% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+@keyframes pedia-demo-popover {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  48%,
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Static streaming caret (no blink — animation budget is 150ms). */
+.pedia-caret::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--color-accent);
+}
