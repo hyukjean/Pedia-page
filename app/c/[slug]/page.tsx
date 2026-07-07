@@ -84,6 +84,12 @@ export default async function CardPage({ params }: Params) {
       >
         explore this live on pedia.page →
       </a>
+      <a
+        href="mailto:team@pedia.page"
+        className="mt-10 block text-[11px] text-sub opacity-60 transition-opacity duration-150 hover:opacity-100"
+      >
+        team@pedia.page
+      </a>
     </div>
   );
 }

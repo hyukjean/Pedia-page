@@ -694,6 +694,12 @@ export default function Workspace({
           )}
         </div>
         <AuthCorner user={user} />
+        <a
+          href="mailto:team@pedia.page"
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 text-[11px] text-sub opacity-50 transition-opacity duration-150 hover:opacity-100"
+        >
+          team@pedia.page
+        </a>
       </div>
     );
   }
