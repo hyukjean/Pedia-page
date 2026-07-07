@@ -537,7 +537,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
   }, [phase]);
 
   // ── Drag demo ──────────────────────────────────────────────
-  // Once, ~6.5s after the first answer settles and only while nothing has
+  // Once, ~2.8s after the first answer settles and only while nothing has
   // been derived: a phantom selection sweeps across a real phrase in the
   // answer and fades — the gesture demonstrated, not described. Language-
   // free by construction.
@@ -566,7 +566,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
       if (r.width < 40) return;
       setDemoRect({ x: r.left, y: r.top, w: r.width, h: r.height });
       window.setTimeout(() => setDemoRect(null), 2650);
-    }, 6500);
+    }, 2800);
     return () => clearTimeout(t);
   }, [rootSettled, hasCards, demoPlayed]);
 
@@ -677,6 +677,12 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
           <div className="mb-8 flex items-center justify-between">
             <button
               onClick={() => {
+                // Leaving on purpose = done with this thread. The mirror is
+                // crash protection, not history — it survives reloads only.
+                try {
+                  sessionStorage.removeItem("pedia-thread");
+                } catch {}
+                setResume(null);
                 setPhase("landing");
                 setInput("");
               }}
