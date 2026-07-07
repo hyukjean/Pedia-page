@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Spatial knowledge exploration. One page, every derived understanding inside it — the replacement for forty open tabs.",
   openGraph: {
-    siteName: "pedia.page",
+    siteName: "Pedia",
     type: "website",
   },
 };

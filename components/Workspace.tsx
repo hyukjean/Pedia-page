@@ -691,7 +691,7 @@ export default function Workspace({
 
   return (
     <div className="min-h-screen" onMouseUp={handleMouseUp}>
-      <div className="mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pb-[45vh]">
+      <div className="mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 max-md:pb-[45vh]">
         {/* ── Root column ─────────────────────────────────── */}
         <main className="min-w-0 max-w-[640px] flex-1">
           <div className="mb-8 flex items-center justify-between">

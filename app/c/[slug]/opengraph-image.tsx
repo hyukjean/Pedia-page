@@ -71,7 +71,7 @@ export default async function OGImage({ params }: { params: Promise<{ slug: stri
     ...(hookFont ? [{ name: "hook", data: hookFont, weight: 800 as const }] : []),
     ...(bodyFont ? [{ name: "body", data: bodyFont, weight: 500 as const }] : []),
   ];
-  const hookSize = hook.length < 42 ? 68 : hook.length < 72 ? 58 : 48;
+  const hookSize = hook.length < 42 ? 78 : hook.length < 72 ? 66 : 56;
 
   return new ImageResponse(
     (

@@ -37,22 +37,11 @@ export function useUser(): { user: SessionUser | null; ready: boolean } {
   return { user, ready };
 }
 
-// The label cycles through languages — the movement is the affordance
-// that says "this is a button", and the languages say "any language works".
-const SIGN_IN_LABELS = ["sign in", "로그인", "サインイン", "登录", "Anmelden", "se connecter"];
-
 export default function AuthCorner({ user }: { user: SessionUser | null }) {
   const [mode, setMode] = useState<"idle" | "form" | "sent">("idle");
   const [email, setEmail] = useState("");
-  const [labelIdx, setLabelIdx] = useState(0);
   const [panelOpen, setPanelOpen] = useState(false);
   const sb = supabaseBrowser();
-
-  useEffect(() => {
-    if (!sb || user || mode !== "idle") return;
-    const t = setInterval(() => setLabelIdx((i) => (i + 1) % SIGN_IN_LABELS.length), 2600);
-    return () => clearInterval(t);
-  }, [sb, user, mode]);
 
   if (!sb) return null;
 
@@ -82,11 +71,9 @@ export default function AuthCorner({ user }: { user: SessionUser | null }) {
       ) : mode === "idle" ? (
         <button
           onClick={() => setMode("form")}
-          className="min-w-[88px] text-right opacity-70 transition-opacity duration-150 hover:opacity-100"
+          className="opacity-70 transition-opacity duration-150 hover:opacity-100"
         >
-          <span key={labelIdx} className="pedia-in inline-block">
-            {SIGN_IN_LABELS[labelIdx]}
-          </span>
+          sign in
         </button>
       ) : mode === "form" ? (
         <form onSubmit={sendLink} className="pedia-in flex items-center gap-2">

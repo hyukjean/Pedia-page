@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: card.query_text,
       description,
       type: "article",
-      siteName: "pedia.page",
+      siteName: "Pedia",
     },
     twitter: {
       card: "summary_large_image",
@@ -51,7 +51,7 @@ export default async function CardPage({ params }: Params) {
     : [];
 
   return (
-    <div className="mx-auto max-w-[640px] px-6 py-16">
+    <div className="mx-auto max-w-[640px] px-6 py-16 max-md:pt-6">
       <a href="/" className="mb-10 block text-[14px] font-semibold tracking-tight">
         pedia<span className="text-accent">.</span>page
       </a>
