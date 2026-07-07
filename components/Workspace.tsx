@@ -588,7 +588,9 @@ export default function Workspace({
       range.setEnd(tn, end);
       const r = range.getBoundingClientRect();
       if (r.width < 40) return;
-      setDemoRect({ x: r.left, y: r.top, w: r.width, h: r.height });
+      // Page coordinates, not viewport: the overlay is absolute so it
+      // scrolls with the text it highlights instead of detaching.
+      setDemoRect({ x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height });
       window.setTimeout(() => setDemoRect(null), 2650);
     }, 2800);
     return () => clearTimeout(t);
@@ -993,7 +995,7 @@ export default function Workspace({
       {/* ── Drag demo: phantom selection sweep + ghost popover ── */}
       {demoRect && (
         <div
-          className="pointer-events-none fixed z-20"
+          className="pointer-events-none absolute z-20"
           style={{ left: demoRect.x, top: demoRect.y, width: demoRect.w, height: demoRect.h }}
         >
           <div

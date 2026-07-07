@@ -42,7 +42,8 @@ export default function PublicCardDemo({ question }: { question: string }) {
       range.setEnd(tn, end);
       const r = range.getBoundingClientRect();
       if (r.width < 40) return;
-      setDemoRect({ x: r.left, y: r.top, w: r.width, h: r.height });
+      // Page coordinates + absolute positioning → scrolls with the text.
+      setDemoRect({ x: r.left + window.scrollX, y: r.top + window.scrollY, w: r.width, h: r.height });
       window.setTimeout(() => setDemoRect(null), 2650);
     }, 2800);
     return () => clearTimeout(t);
@@ -132,7 +133,7 @@ export default function PublicCardDemo({ question }: { question: string }) {
 
       {demoRect && (
         <div
-          className="pointer-events-none fixed z-20"
+          className="pointer-events-none absolute z-20"
           style={{ left: demoRect.x, top: demoRect.y, width: demoRect.w, height: demoRect.h }}
         >
           <div
