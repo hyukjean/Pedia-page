@@ -171,10 +171,10 @@ function LyricsReel({ frames, onClose }: { frames: ReelFrame[]; onClose: () => v
                 key={i}
                 id={`lyric-${i}`}
                 onClick={() => seek(i)}
-                className={`text-left leading-snug transition-opacity duration-150 ${
+                className={`text-left leading-snug ${
                   i === idx
                     ? "text-[19px] font-semibold text-ink"
-                    : "text-[14px] text-sub opacity-45 hover:opacity-90"
+                    : "pedia-invite text-[14px] text-sub opacity-45 hover:opacity-90"
                 }`}
               >
                 {f.text}
@@ -253,12 +253,12 @@ export default function ExportView({
               </button>
             )}
             {reel && reel.length > 1 && !streaming && !showReel && (
-              <button onClick={() => setShowReel(true)} className="text-accent transition-opacity duration-150 hover:opacity-70">
+              <button onClick={() => setShowReel(true)} className="pedia-lift text-accent">
                 ▶ play as a reel ({reel.reduce((s, f) => s + f.sec, 0)}s)
               </button>
             )}
             {!streaming && md && (
-              <button onClick={download} className="text-accent transition-opacity duration-150 hover:opacity-70">
+              <button onClick={download} className="pedia-lift text-accent">
                 ↓ download .md
               </button>
             )}

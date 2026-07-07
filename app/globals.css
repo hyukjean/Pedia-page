@@ -25,7 +25,45 @@ body {
   background: color-mix(in srgb, var(--color-accent) 14%, transparent);
 }
 
-/* The only animation in the product: opacity/transform, 150ms. */
+/* Animation budget: opacity/transform only. State changes snap at 150ms;
+   hover *invitations* pull slowly at ~320ms — a beckon, not a flick. */
+.pedia-invite {
+  transition:
+    opacity 320ms ease,
+    transform 320ms ease;
+}
+.pedia-invite:hover {
+  transform: translateX(4px);
+}
+
+.pedia-lift {
+  transition:
+    opacity 280ms ease,
+    transform 280ms ease;
+}
+.pedia-lift:hover {
+  transform: translateY(-2px);
+}
+
+.pedia-pop {
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+.pedia-pop:hover {
+  transform: scale(1.2);
+}
+
+/* Thread-map dots grow toward the cursor. */
+.pedia-map circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 200ms ease;
+}
+.pedia-map circle:hover {
+  transform: scale(1.45);
+}
+
 @keyframes pedia-in {
   from {
     opacity: 0;

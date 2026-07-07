@@ -72,7 +72,7 @@ export default function ThreadMap({
           : "select-none"
       }
     >
-      <svg width={w} height={h} viewBox={`-4 -8 ${w} ${h}`} className="overflow-visible">
+      <svg width={w} height={h} viewBox={`-4 -8 ${w} ${h}`} className="pedia-map overflow-visible">
         {nodes.map((n) => {
           if (!n.parentId) return null;
           const p = pos.get(n.parentId);

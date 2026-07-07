@@ -638,11 +638,12 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
             {personalized && (
               <span className="text-[11px] text-sub opacity-70">from what you&apos;ve been exploring</span>
             )}
-            {suggestions.map((s) => (
+            {suggestions.map((s, i) => (
               <button
                 key={s}
                 onClick={() => ask(s)}
-                className="text-left text-[14px] text-ink opacity-45 transition-opacity duration-150 hover:opacity-100"
+                className="pedia-in pedia-invite text-left text-[14px] text-ink opacity-45 hover:opacity-100"
+                style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards" }}
               >
                 {s}
               </button>
@@ -651,7 +652,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
           {resume && (
             <button
               onClick={restoreThread}
-              className="mt-9 block text-[13px] text-sub opacity-70 transition-opacity duration-150 hover:opacity-100"
+              className="pedia-invite mt-9 block text-[13px] text-sub opacity-70 hover:opacity-100"
             >
               continue where you left off — “{resume.slice(0, 42)}
               {resume.length > 42 ? "…" : ""}” →
@@ -709,7 +710,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
           {canSynthesize && (
             <button
               onClick={runSynthesis}
-              className="pedia-in mb-3 block text-left text-[13px] text-accent opacity-80 transition-opacity duration-150 hover:opacity-100"
+              className="pedia-in pedia-invite mb-3 block text-left text-[13px] text-accent opacity-80 hover:opacity-100"
             >
               {synthesis.status === "done"
                 ? showSynthesis
@@ -769,7 +770,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
                       "";
                     derive(ROOT_ID, c, para);
                   }}
-                  className="rounded bg-surface px-2.5 py-1 text-[13px] text-sub transition-opacity duration-150 hover:opacity-70"
+                  className="pedia-lift rounded bg-surface px-2.5 py-1 text-[13px] text-ink opacity-60 hover:opacity-100"
                 >
                   {c}
                 </button>
@@ -807,7 +808,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               {exportState.status === "idle" && (
                 <button
                   onClick={() => setExportState((s) => ({ ...s, status: "choosing" }))}
-                  className="text-accent opacity-80 transition-opacity duration-150 hover:opacity-100"
+                  className="pedia-invite text-accent opacity-80 hover:opacity-100"
                 >
                   compile this thread into one story →
                 </button>
@@ -833,7 +834,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               {exportState.status === "done" && !showExport && (
                 <button
                   onClick={() => setShowExport(true)}
-                  className="text-accent opacity-80 transition-opacity duration-150 hover:opacity-100"
+                  className="pedia-invite text-accent opacity-80 hover:opacity-100"
                 >
                   read the compiled story →
                 </button>
@@ -953,7 +954,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               e.stopPropagation();
               popoverQuote();
             }}
-            className={`font-semibold leading-none text-accent transition-opacity duration-150 hover:opacity-60 ${
+            className={`pedia-pop font-semibold leading-none text-accent ${
               coarse ? "px-3 py-2 text-[17px]" : "px-1.5 py-0.5 text-[14px]"
             }`}
           >
@@ -966,7 +967,7 @@ export default function Workspace({ initialQuestion }: { initialQuestion: string
               e.stopPropagation();
               popoverCard();
             }}
-            className={`font-semibold leading-none text-accent transition-opacity duration-150 hover:opacity-60 ${
+            className={`pedia-pop font-semibold leading-none text-accent ${
               coarse ? "px-3 py-2 text-[17px]" : "px-1.5 py-0.5 text-[14px]"
             }`}
           >
@@ -1045,10 +1046,10 @@ function Card({
         onClick={onFocus}
         id={`card-${node.id}`}
         style={{ marginLeft: indent }}
-        className="flex items-center gap-2 rounded bg-surface px-3 py-2 text-left transition-opacity duration-150 hover:opacity-80"
+        className="pedia-invite flex items-center gap-2 rounded bg-surface px-3 py-2 text-left"
       >
         <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${node.bedrock ? "bg-accent" : "bg-sub"}`} />
-        <span className="truncate text-[13px] text-sub">{node.label}</span>
+        <span className="truncate text-[13px] text-ink opacity-55">{node.label}</span>
       </button>
     );
   }
