@@ -68,9 +68,11 @@ const ROOT_ID = "root";
 export default function Workspace({
   initialQuestion,
   initialSelection = null,
+  initialAsk = null,
 }: {
   initialQuestion: string | null;
   initialSelection?: string | null;
+  initialAsk?: string | null;
 }) {
   const [phase, setPhase] = useState<"landing" | "session">("landing");
   const [input, setInput] = useState("");
@@ -549,13 +551,14 @@ export default function Workspace({
   // visitor's gesture on the shared page completes inside the runtime.
   const selConsumed = useRef(false);
   useEffect(() => {
-    if (!initialSelection || selConsumed.current) return;
+    const carried = initialSelection ?? initialAsk;
+    if (!carried || selConsumed.current) return;
     const root = nodes[ROOT_ID];
     if (phase !== "session" || !root?.content || root.streaming) return;
     selConsumed.current = true;
-    const para = root.content.split(/\n\n+/).find((p) => p.includes(initialSelection)) ?? root.content.slice(0, 1200);
-    derive(ROOT_ID, initialSelection, para);
-  }, [initialSelection, phase, nodes, derive]);
+    const para = root.content.split(/\n\n+/).find((p) => p.includes(carried)) ?? root.content.slice(0, 1200);
+    derive(ROOT_ID, carried, para, initialSelection ? "drag" : "question");
+  }, [initialSelection, initialAsk, phase, nodes, derive]);
 
   // ── Drag demo ──────────────────────────────────────────────
   // Once, ~2.8s after the first answer settles and only while nothing has

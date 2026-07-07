@@ -51,7 +51,7 @@ export default async function CardPage({ params }: Params) {
     : [];
 
   return (
-    <div className="mx-auto max-w-[640px] px-6 py-16 max-md:pt-6">
+    <div className="mx-auto max-w-[640px] px-6 pb-32 pt-16 max-md:pt-6">
       <a href="/" className="mb-10 block text-[14px] font-semibold tracking-tight">
         pedia<span className="text-accent">.</span>page
       </a>
