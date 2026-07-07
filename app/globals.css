@@ -79,8 +79,18 @@ body {
   background: var(--color-page);
   border: 1px solid color-mix(in srgb, var(--color-sub) 35%, transparent);
 }
-.pedia-input:focus {
+.pedia-input:focus,
+.pedia-input:focus-within {
   border-color: var(--color-accent);
+}
+
+/* Liquid glass: translucent page color over a backdrop blur — the bar
+   floats, content glows through. Must come after .pedia-input so the
+   translucent background wins. */
+.pedia-glass {
+  background: color-mix(in srgb, var(--color-page) 62%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 /* Concept chips read as links: accent-tinted pills, deepen on hover —

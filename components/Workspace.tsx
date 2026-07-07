@@ -651,12 +651,12 @@ export default function Workspace({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything"
-              className="pedia-input w-full rounded px-4 py-3 pr-11 text-[16px] outline-none placeholder:text-sub"
+              className="pedia-input w-full rounded-full px-5 py-3 pr-14 text-[16px] outline-none placeholder:text-sub"
             />
             <button
               type="submit"
               disabled={!input.trim()}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[17px] font-semibold text-accent transition-opacity duration-150 disabled:opacity-25"
+              className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-[16px] font-semibold text-white transition-opacity duration-150 disabled:opacity-25"
             >
               →
             </button>
@@ -699,7 +699,11 @@ export default function Workspace({
 
   return (
     <div className="min-h-screen" onMouseUp={handleMouseUp}>
-      <div className="mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 max-md:pb-[calc(40vh+92px)]">
+      <div
+        className={`mx-auto flex max-w-[1200px] gap-12 px-6 py-14 max-md:pt-5 ${
+          activeId !== ROOT_ID ? "max-md:pb-[calc(45vh+24px)]" : "max-md:pb-24"
+        }`}
+      >
         {/* ── Root column ─────────────────────────────────── */}
         <main className="min-w-0 max-w-[640px] flex-1">
           <div className="mb-8 flex items-center justify-between">
@@ -811,13 +815,13 @@ export default function Workspace({
               answer. */}
           {!root?.streaming && (
             <form
-              className="mt-10 max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:mt-0 max-md:bg-page max-md:px-4 max-md:pt-2 max-md:pb-[max(0.6rem,env(safe-area-inset-bottom))]"
+              className="mt-10 max-md:fixed max-md:inset-x-3 max-md:bottom-[max(0.8rem,env(safe-area-inset-bottom))] max-md:z-30 max-md:mt-0"
               onSubmit={(e) => {
                 e.preventDefault();
                 askFollowUp();
               }}
             >
-              <div className="relative">
+              <div className="pedia-input pedia-glass relative rounded-full">
                 <input
                   id="follow-input"
                   value={followInput}
@@ -827,12 +831,12 @@ export default function Workspace({
                       ? `ask about “${activeNode.label.slice(0, 32)}”`
                       : "ask a follow-up — it joins this thread"
                   }
-                  className="pedia-input w-full rounded px-3.5 py-2.5 pr-10 text-[16px] outline-none placeholder:text-sub md:text-[14px]"
+                  className="w-full rounded-full bg-transparent px-4.5 py-2.5 pr-12 text-[16px] outline-none placeholder:text-sub md:text-[14px]"
                 />
                 <button
                   type="submit"
                   disabled={!followInput.trim()}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[16px] font-semibold text-accent transition-opacity duration-150 disabled:opacity-25"
+                  className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-[15px] font-semibold text-white transition-opacity duration-150 disabled:opacity-25"
                 >
                   →
                 </button>
@@ -922,7 +926,7 @@ export default function Workspace({
 
       {/* ── Mobile bottom sheet ─────────────────────────────── */}
       {activeId !== ROOT_ID && activeNode && (
-        <div className="pedia-in fixed inset-x-0 bottom-[62px] z-20 max-h-[40vh] overflow-y-auto bg-surface px-5 pb-6 pt-4 md:hidden">
+        <div className="pedia-in fixed inset-x-0 bottom-0 z-20 max-h-[45vh] overflow-y-auto bg-surface px-5 pb-20 pt-4 md:hidden">
           <div className="mb-2 flex items-start justify-between gap-4">
             <span className="text-[14px] font-semibold leading-snug">{activeNode.label}</span>
             <button onClick={() => setActiveId(ROOT_ID)} className="text-[16px] leading-none text-sub">
