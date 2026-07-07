@@ -114,12 +114,14 @@ export default function PublicCardDemo({ question }: { question: string }) {
             }}
           />
           <div
-            className={`absolute right-0 flex items-center overflow-hidden rounded bg-accent px-2.5 py-1.5 text-[13px] font-semibold leading-none text-white ${
+            className={`absolute right-0 flex items-stretch overflow-hidden rounded bg-accent text-[13px] font-semibold leading-none text-white ${
               coarse ? "-bottom-2.5 translate-y-full" : "-top-2 -translate-y-full"
             }`}
             style={{ opacity: 0, animation: "pedia-demo-popover 2600ms ease-in-out forwards" }}
           >
-            ? card
+            <span className="px-2.5 py-1.5">+</span>
+            <span className="my-1.5 w-px bg-white opacity-30" />
+            <span className="px-2.5 py-1.5">?</span>
           </div>
         </div>
       )}
@@ -137,9 +139,9 @@ export default function PublicCardDemo({ question }: { question: string }) {
               e.stopPropagation();
               explore();
             }}
-            className="rounded bg-accent px-3.5 py-2.5 text-[13px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
+            className="rounded bg-accent px-4 py-2.5 text-[16px] font-semibold leading-none text-white transition-opacity duration-150 hover:opacity-80 active:opacity-70"
           >
-            ? open this as a card →
+            ?
           </button>
         </div>
       )}

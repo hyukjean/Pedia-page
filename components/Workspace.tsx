@@ -976,10 +976,10 @@ export default function Workspace({
               popoverQuote();
             }}
             className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
-              coarse ? "px-3.5 py-2.5 text-[13px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
+              coarse ? "px-4 py-2.5 text-[16px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
             }`}
           >
-            {coarse ? "+ quote" : "+"}
+            +
           </button>
           <span className="my-1.5 w-px bg-white opacity-30" />
           <button
@@ -990,10 +990,10 @@ export default function Workspace({
               popoverCard();
             }}
             className={`font-semibold leading-none text-white transition-opacity duration-150 active:opacity-70 ${
-              coarse ? "px-3.5 py-2.5 text-[13px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
+              coarse ? "px-4 py-2.5 text-[16px]" : "px-2.5 py-1.5 text-[13px] hover:opacity-80"
             }`}
           >
-            {coarse ? "? card" : "?"}
+            ?
           </button>
         </div>
       )}
