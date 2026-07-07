@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
+import AccountPanel from "@/components/AccountPanel";
 
 // Sign-in as a corner whisper, not a wall. Text only, no borders, no modal.
 // If auth isn't configured (no NEXT_PUBLIC_SUPABASE_* env) this renders
@@ -44,6 +45,7 @@ export default function AuthCorner({ user }: { user: SessionUser | null }) {
   const [mode, setMode] = useState<"idle" | "form" | "sent">("idle");
   const [email, setEmail] = useState("");
   const [labelIdx, setLabelIdx] = useState(0);
+  const [panelOpen, setPanelOpen] = useState(false);
   const sb = supabaseBrowser();
 
   useEffect(() => {
@@ -68,15 +70,15 @@ export default function AuthCorner({ user }: { user: SessionUser | null }) {
   return (
     <div className="fixed right-6 top-5 z-10 text-[12px] text-sub">
       {user ? (
-        <span className="opacity-60">
-          {user.email}
+        <>
           <button
-            onClick={() => sb.auth.signOut()}
-            className="ml-3 transition-opacity duration-150 hover:opacity-60"
+            onClick={() => setPanelOpen((v) => !v)}
+            className="opacity-60 transition-opacity duration-150 hover:opacity-100"
           >
-            sign out
+            {user.email}
           </button>
-        </span>
+          {panelOpen && <AccountPanel onClose={() => setPanelOpen(false)} />}
+        </>
       ) : mode === "idle" ? (
         <button
           onClick={() => setMode("form")}

@@ -7,7 +7,8 @@
 - Multilingual UI chrome (answers already follow the question's language)
 - Admin page / analytics dashboard (SQL queries in COST.md cover the pitch data)
 - Chat history
-- Rate limiting / abuse protection on API routes (needed before real public launch)
+- ~~Rate limiting~~ (built 2026-07: Postgres fixed-window counters, plan-tiered, cache hits unmetered)
+- **Payment provider integration for the plus plan.** The tier system is live (plan column, tiered limits, account panel with upgrade copy) — what remains is charging money: pick a PSP (Stripe needs a US/supported entity; from Korea the practical paths are Paddle or Lemon Squeezy as merchant-of-record, or Toss Payments domestically), add a checkout link in the account panel, and a webhook route that flips `users.plan` to 'plus' on payment and back on cancellation. ~1 day of work once the PSP account exists.
 - Mobile long-press selection affordance (chips + map work on mobile; text-selection derivation is desktop-first for now)
 - Synthesis token logging (root + cards are logged; synthesis is ~2% of calls)
 - Card voting UI (upvotes/downvotes columns exist and are wired into the schema)

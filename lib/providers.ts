@@ -103,6 +103,12 @@ export interface StreamResult {
   mock: boolean;
 }
 
+/** BYOK: run this call on the user's own provider account. */
+export interface ProviderOverride {
+  provider: ProviderId;
+  apiKey: string;
+}
+
 /**
  * Call the provider's chat-completions endpoint with streaming and re-emit
  * plain text. Token usage is captured from the final SSE chunk when the
@@ -113,9 +119,12 @@ export async function streamChat(
   system: string,
   user: string,
   maxTokens = 1024,
+  override?: ProviderOverride,
 ): Promise<StreamResult> {
-  const p = activeProvider(task);
+  const p = override ? PROVIDERS[override.provider] : activeProvider(task);
   if (!p) return mockStream(task, user);
+  const apiKey = override?.apiKey ?? apiKeyFor(p);
+  if (!apiKey) return mockStream(task, user);
 
   const model = modelFor(p, task);
   const body: Record<string, unknown> = {
@@ -133,7 +142,7 @@ export async function streamChat(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKeyFor(p)}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(body),
   });

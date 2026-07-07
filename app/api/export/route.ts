@@ -3,6 +3,8 @@ import { streamChat } from "@/lib/providers";
 import { loadPrompt } from "@/lib/prompts";
 import { currentUser } from "@/lib/auth";
 import { logEvent } from "@/lib/events";
+import { getProfile } from "@/lib/account";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -73,16 +75,24 @@ async function handle(req: NextRequest) {
     ),
   ].join("\n");
 
-  const userP = currentUser().catch(() => null);
-  const { stream, model, mock } = await streamChat("synthesis", loadPrompt("export"), user, 4096);
+  const authed = await currentUser().catch(() => null);
+  const profile = await getProfile(authed);
+  const verdict = await checkRateLimit(req, "strong", authed, profile);
+  if (!verdict.ok) return Response.json({ error: verdict.message }, { status: 429 });
+
+  const { stream, model, mock } = await streamChat(
+    "synthesis",
+    loadPrompt("export"),
+    user,
+    4096,
+    profile.byok ?? undefined,
+  );
 
   if (!mock) {
     after(() =>
-      userP
-        .then((u) =>
-          logEvent({ user: u, sessionId: body.sessionId, rootQuestion: question, type: "export", label: question }),
-        )
-        .catch(() => {}),
+      logEvent({ user: authed, sessionId: body.sessionId, rootQuestion: question, type: "export", label: question }).catch(
+        () => {},
+      ),
     );
   }
 

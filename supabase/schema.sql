@@ -62,11 +62,17 @@ $$;
 create table if not exists users (
   id                uuid primary key references auth.users (id) on delete cascade,
   email             text,
-  encrypted_api_key text,          -- BYOK reservation, no flows yet
+  encrypted_api_key text,          -- BYOK: AES-256-GCM, server-side only
+  byok_provider     text,          -- 'gemini' | 'openai' | 'anthropic'
+  plan              text not null default 'free',  -- 'free' | 'plus'
   recs              jsonb,         -- last generated suggestions
   recs_event_count  integer not null default -1,
   created_at        timestamptz not null default now()
 );
+
+-- Columns for projects created before BYOK / plans existed.
+alter table users add column if not exists byok_provider text;
+alter table users add column if not exists plan text not null default 'free';
 
 -- One exploration session = one root question and everything derived from it.
 -- id is client-generated so event logging never blocks the answer stream.
@@ -101,11 +107,44 @@ alter table events add constraint events_type_check
 
 create index if not exists events_user_idx on events (user_id, created_at desc);
 
+-- ── Rate limiting ────────────────────────────────────────────
+-- Fixed-window counters, atomic via upsert. One row per (class, identity)
+-- bucket; serverless instances share it, which in-memory counters can't.
+create table if not exists rate_limits (
+  bucket       text primary key,
+  window_start timestamptz not null,
+  count        integer not null
+);
+
+create or replace function hit_rate_limit(p_bucket text, p_limit int, p_window_seconds int)
+returns boolean
+language plpgsql
+as $$
+declare
+  allowed boolean;
+begin
+  insert into rate_limits (bucket, window_start, count)
+  values (p_bucket, now(), 1)
+  on conflict (bucket) do update set
+    count = case
+      when rate_limits.window_start < now() - make_interval(secs => p_window_seconds) then 1
+      else rate_limits.count + 1
+    end,
+    window_start = case
+      when rate_limits.window_start < now() - make_interval(secs => p_window_seconds) then now()
+      else rate_limits.window_start
+    end;
+  select count <= p_limit into allowed from rate_limits where bucket = p_bucket;
+  return allowed;
+end;
+$$;
+
 -- ── Row-level security ───────────────────────────────────────
 -- All reads/writes go through server routes using the service-role key
 -- (which bypasses RLS). The browser's anon key is used for auth only,
 -- so enabling RLS with no policies closes every direct-table path.
-alter table cards    enable row level security;
-alter table users    enable row level security;
-alter table sessions enable row level security;
-alter table events   enable row level security;
+alter table cards       enable row level security;
+alter table users       enable row level security;
+alter table sessions    enable row level security;
+alter table events      enable row level security;
+alter table rate_limits enable row level security;

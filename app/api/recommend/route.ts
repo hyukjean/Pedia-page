@@ -1,5 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getProfile } from "@/lib/account";
 import { streamChat } from "@/lib/providers";
 import { loadPrompt } from "@/lib/prompts";
 
@@ -45,7 +46,14 @@ export async function GET() {
     .join("\n");
 
   // Cheap model — this is a background nicety, never worth root-model cost.
-  const { stream, mock } = await streamChat("card", loadPrompt("recommend"), trajectory, 2048);
+  const acct = await getProfile(user);
+  const { stream, mock } = await streamChat(
+    "card",
+    loadPrompt("recommend"),
+    trajectory,
+    2048,
+    acct.byok ?? undefined,
+  );
   if (mock) return Response.json({ suggestions: null });
 
   const full = await new Response(stream).text();

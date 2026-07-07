@@ -6,6 +6,8 @@ import { cacheLookup, cacheStore } from "@/lib/cache";
 import { parseModelOutput, META_DELIMITER } from "@/lib/protocol";
 import { currentUser } from "@/lib/auth";
 import { logEvent } from "@/lib/events";
+import { getProfile } from "@/lib/account";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -52,25 +54,27 @@ async function handle(req: NextRequest) {
   // their own key space ("q:") so they never collide with dragged text.
   const hash = contextHash("card", kind === "question" ? `q:${selection}` : selection, context);
 
-  // Resolve the signed-in user in parallel — never awaited on the stream path.
+  // Resolve the signed-in user in parallel with the cache lookup.
   const userP = currentUser().catch(() => null);
-  const attribute = (bedrock: boolean) =>
-    userP.then((user) =>
-      logEvent({
-        user,
-        sessionId: body.sessionId,
-        rootQuestion,
-        type: "derive",
-        label: selection,
-        depth,
-        cardHash: hash,
-        bedrock,
-      }),
-    );
+  const attributeAs = (user: Awaited<typeof userP>) => (bedrock: boolean) =>
+    logEvent({
+      user,
+      sessionId: body.sessionId,
+      rootQuestion,
+      type: "derive",
+      label: selection,
+      depth,
+      cardHash: hash,
+      bedrock,
+    });
 
   const hit = await cacheLookup("card", hash, `${selection} — ${context.slice(0, 300)}`);
   if (hit) {
-    after(() => attribute(hit.meta?.bedrock === true).catch(() => {}));
+    after(() =>
+      userP
+        .then((u) => attributeAs(u)(hit.meta?.bedrock === true))
+        .catch(() => {}),
+    );
     const responseBody = `${hit.content}\n${META_DELIMITER}\n${JSON.stringify(hit.meta ?? {})}`;
     return new Response(responseBody, {
       headers: textHeaders({
@@ -96,9 +100,22 @@ async function handle(req: NextRequest) {
     selection,
   ].join("\n");
 
+  // Generation path: identity → budget → (maybe) the user's own key.
+  const authed = await userP;
+  const profile = await getProfile(authed);
+  const verdict = await checkRateLimit(req, "cheap", authed, profile);
+  if (!verdict.ok) return Response.json({ error: verdict.message }, { status: 429 });
+  const attribute = attributeAs(authed);
+
   // Generous cap: thinking-capable card models spend budget on hidden
   // reasoning tokens first; unused cap costs nothing.
-  const { stream, done, model, mock } = await streamChat("card", loadPrompt("knowledge-card"), user, 2048);
+  const { stream, done, model, mock } = await streamChat(
+    "card",
+    loadPrompt("knowledge-card"),
+    user,
+    2048,
+    profile.byok ?? undefined,
+  );
 
   const store = done.then(({ fullText, usage }) => {
     if (mock) return;

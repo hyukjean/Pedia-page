@@ -7,6 +7,8 @@ import { cacheLookup, cacheStore } from "@/lib/cache";
 import { parseModelOutput, META_DELIMITER } from "@/lib/protocol";
 import { currentUser } from "@/lib/auth";
 import { logEvent } from "@/lib/events";
+import { getProfile } from "@/lib/account";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -37,17 +39,18 @@ async function handle(req: NextRequest) {
   const q = question.trim();
   const hash = contextHash("root", q);
 
-  // Resolve the signed-in user in parallel — never awaited on the stream path.
+  // Resolve the signed-in user in parallel with the cache lookup.
   const userP = currentUser().catch(() => null);
-  const attribute = () =>
-    userP.then((user) =>
-      logEvent({ user, sessionId, rootQuestion: q, type: "ask", label: q, cardHash: hash }),
-    );
 
-  // Cache first — a hit costs zero LLM calls (but is still trajectory data).
+  // Cache first — a hit costs zero LLM calls and is never rate limited
+  // (but it is still trajectory data).
   const hit = await cacheLookup("root", hash, q);
   if (hit) {
-    after(() => attribute().catch(() => {}));
+    after(() =>
+      userP
+        .then((u) => logEvent({ user: u, sessionId, rootQuestion: q, type: "ask", label: q, cardHash: hash }))
+        .catch(() => {}),
+    );
     const body = `${hit.content}\n${META_DELIMITER}\n${JSON.stringify(hit.meta ?? {})}`;
     return new Response(body, {
       headers: textHeaders({
@@ -59,10 +62,24 @@ async function handle(req: NextRequest) {
     });
   }
 
+  // Generation path: identity → budget → (maybe) the user's own key.
+  const user = await userP;
+  const profile = await getProfile(user);
+  const verdict = await checkRateLimit(req, "strong", user, profile);
+  if (!verdict.ok) return Response.json({ error: verdict.message }, { status: 429 });
+  const attribute = () =>
+    logEvent({ user, sessionId, rootQuestion: q, type: "ask", label: q, cardHash: hash });
+
   // 4096, not ~1024: reasoning models spend most of the budget on hidden
   // thinking tokens before the visible answer; a tight cap truncates output
   // mid-sentence (finish_reason: length). The cap costs nothing unless used.
-  const { stream, done, model, mock } = await streamChat("root", loadPrompt("root-answer"), q, 4096);
+  const { stream, done, model, mock } = await streamChat(
+    "root",
+    loadPrompt("root-answer"),
+    q,
+    4096,
+    profile.byok ?? undefined,
+  );
 
   // Persist after the stream completes — off the response path. after()
   // keeps the serverless instance alive; the race bounds a client abort.

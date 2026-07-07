@@ -36,6 +36,10 @@ Signed-in exploration is saved as a **trajectory** — every question (`ask`), e
 
 Anonymous use is untouched: signed out (or with these two vars unset) the product is exactly the MVP.
 
+### Rate limits, BYOK & plans
+
+Generation calls (never cache hits — those are free and unlimited) are metered per hour with Postgres fixed-window counters, tiered by plan: anonymous → free (signed in) → plus → BYOK. Defaults are in `.env.example` (`PEDIA_LIMIT_*`). Signed-in users get an account panel (click your email, top right): current plan and limits, **bring-your-own-key** (Gemini/OpenAI/Anthropic key, AES-256-GCM encrypted with `PEDIA_KEY_SECRET`, calls then run on the user's own account at the highest limits), a count of everything recorded about them, and one-click erasure of their exploration history. The `plus` tier is enforced end-to-end; connecting a payment provider to actually sell it is the one missing piece (see LATER.md).
+
 ## Deploy to Vercel
 
 1. Push this repo to GitHub.
